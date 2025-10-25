@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("<h1>Django Docker Render Deployment Successful 🎉</h1>")
 
 urlpatterns = [
+    path('', home),  # 👈 Root URL
     path('admin/', admin.site.urls),
 ]
