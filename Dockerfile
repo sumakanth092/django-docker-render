@@ -16,20 +16,23 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
+# Copy project files
 COPY . /app/
 
-# Create a user (optional, for security)
+# Copy entrypoint and make it executable **before switching user**
+COPY entrypoint.sh /app/
+RUN chmod +x /app/entrypoint.sh
+
+# Create a non-root user and switch
 RUN useradd -m appuser
 USER appuser
 
-# Collect static files
+# Prepare static files directory
 ENV DJANGO_SETTINGS_MODULE=config.settings
 RUN mkdir -p /home/appuser/staticfiles
-RUN python manage.py collectstatic --noinput || true
 
-# Expose port (Render expects 10000 or 8000; we'll use 8000)
+# Expose port (Render expects 8000)
 EXPOSE 8000
 
-# Use a small entrypoint to run migrations then start gunicorn
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--log-level", "info"]
+# Use entrypoint to run migrations + collectstatic + start gunicorn
+ENTRYPOINT ["/app/entrypoint.sh"]
