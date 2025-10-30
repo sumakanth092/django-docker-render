@@ -30,6 +30,7 @@ USER appuser
 # Prepare static files directory
 ENV DJANGO_SETTINGS_MODULE=config.settings
 RUN mkdir -p /home/appuser/staticfiles
+RUN mkdir -p /opt/render/project/src/staticfiles
 
 # Expose port (Render expects 8000)
 EXPOSE 8000
