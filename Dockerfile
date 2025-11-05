@@ -23,15 +23,15 @@ COPY . /app/
 COPY entrypoint.sh /app/
 RUN chmod +x /app/entrypoint.sh
 
+# ✅ Create staticfiles dir BEFORE switching user (fixes Permission denied)
+RUN mkdir -p /app/staticfiles && chmod 777 /app/staticfiles
+
 # Create a non-root user and switch
 RUN useradd -m appuser
 USER appuser
 
-# Prepare static files directory
+# Set Django settings module
 ENV DJANGO_SETTINGS_MODULE=config.settings
-# Prepare static files directory (create inside /app, owned by appuser)
-RUN mkdir -p /app/staticfiles && chown appuser:appuser /app/staticfiles
-
 
 # Expose port (Render expects 8000)
 EXPOSE 8000
